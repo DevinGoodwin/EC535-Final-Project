@@ -102,4 +102,18 @@ void MainWindow::paintEvent(QPaintEvent *event)
     myellip.setBrush(QColorConstants::Svg::purple);
     myellip.drawEllipse(QRect(XC3+45, YR2+90, 30, 30));
 
+    //All circles C4
+    myellip.setBrush(Qt::red);
+    myellip.drawEllipse(QRect(XC4+5, YR2+10, 30, 30));
+    myellip.setBrush(QColorConstants::Svg::orange);
+    myellip.drawEllipse(QRect(XC4+45, YR2+10, 30, 30));
+    myellip.setBrush(Qt::yellow);
+    myellip.drawEllipse(QRect(XC4+5, YR2+50, 30, 30));
+    myellip.setBrush(Qt::green);
+    myellip.drawEllipse(QRect(XC4+45, YR2+50, 30, 30));
+    myellip.setBrush(Qt::cyan);
+    myellip.drawEllipse(QRect(XC4+5, YR2+90, 30, 30));
+    myellip.setBrush(QColorConstants::Svg::purple);
+    myellip.drawEllipse(QRect(XC4+45, YR2+90, 30, 30));
+
 }
