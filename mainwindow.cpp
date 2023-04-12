@@ -2,20 +2,13 @@
 #include "mainwindow.h"
 #include "./ui_mainwindow.h"
 #include <QPushButton>
+#include <vector>
 
-#define XC1 300
-#define XC2 400
-#define XC3 250
-#define XC4 350
-#define XC5 450
-#define XC6 300
-#define XC7 400
-#define YR1 100
-#define YR2 250
-#define YR3 400
-
-
-
+std::vector<int> Card_XPos = {300,400,250,350,450,300,400}; //Card 1-7 X coord
+std::vector<int> Card_YPos = {100,100,250,250,250,400,400}; //Card 1-7 Y coord
+std::vector<int> Color_XOffset = {5,45,5,45,5,45}; //Color 1-6 X offset from card X coord
+std::vector<int> Color_YOffset = {10,10,50,50,90,90}; //Color 1-6 Y offset from card Y coord
+std::vector<QColor> Colors = {Qt::red,QColorConstants::Svg::orange,Qt::yellow,Qt::green,Qt::cyan,QColorConstants::Svg::purple}; //Colors 1-6
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -32,7 +25,6 @@ MainWindow::~MainWindow()
 void MainWindow::paintEvent(QPaintEvent *event)
 {
 
-
     QPainter painter(this);
     QPen pen;
 
@@ -45,75 +37,22 @@ void MainWindow::paintEvent(QPaintEvent *event)
     painter.drawRect(QRect(0,0,800,600));
 
     painter.setBrush(Qt::white);
-    //Row 1
-    painter.drawRect(QRect(XC1,YR1,80,130));
-    painter.drawRect(QRect(XC2,YR1,80,130));
-    //Row 2
-    painter.drawRect(QRect(XC3,YR2,80,130));
-    painter.drawRect(QRect(XC4,YR2,80,130));
-    painter.drawRect(QRect(XC5,YR2,80,130));
-    //Row 3
-    painter.drawRect(QRect(XC6,YR3,80,130));
-    painter.drawRect(QRect(XC7,YR3,80,130));
+
+    //Card outlines
+    for(int i = 0; i < 7; i++){
+        painter.drawRect(QRect(Card_XPos[i],Card_YPos[i],80,130));
+    }
 
     QPainter myellip(this);
     myellip.setPen(pen);
     pen.setWidth(2);
 
-    //All circles C1
-    myellip.setBrush(Qt::red);
-    myellip.drawEllipse(QRect(XC1+5, YR1+10, 30, 30));
-    myellip.setBrush(QColorConstants::Svg::orange);
-    myellip.drawEllipse(QRect(XC1+45, YR1+10, 30, 30));
-    myellip.setBrush(Qt::yellow);
-    myellip.drawEllipse(QRect(XC1+5, YR1+50, 30, 30));
-    myellip.setBrush(Qt::green);
-    myellip.drawEllipse(QRect(XC1+45, YR1+50, 30, 30));
-    myellip.setBrush(Qt::cyan);
-    myellip.drawEllipse(QRect(XC1+5, YR1+90, 30, 30));
-    myellip.setBrush(QColorConstants::Svg::purple);
-    myellip.drawEllipse(QRect(XC1+45, YR1+90, 30, 30));
-
-    //All circles C2
-    myellip.setBrush(Qt::red);
-    myellip.drawEllipse(QRect(XC2+5, YR1+10, 30, 30));
-    myellip.setBrush(QColorConstants::Svg::orange);
-    myellip.drawEllipse(QRect(XC2+45, YR1+10, 30, 30));
-    myellip.setBrush(Qt::yellow);
-    myellip.drawEllipse(QRect(XC2+5, YR1+50, 30, 30));
-    myellip.setBrush(Qt::green);
-    myellip.drawEllipse(QRect(XC2+45, YR1+50, 30, 30));
-    myellip.setBrush(Qt::cyan);
-    myellip.drawEllipse(QRect(XC2+5, YR1+90, 30, 30));
-    myellip.setBrush(QColorConstants::Svg::purple);
-    myellip.drawEllipse(QRect(XC2+45, YR1+90, 30, 30));
-
-    //All circles C3
-    myellip.setBrush(Qt::red);
-    myellip.drawEllipse(QRect(XC3+5, YR2+10, 30, 30));
-    myellip.setBrush(QColorConstants::Svg::orange);
-    myellip.drawEllipse(QRect(XC3+45, YR2+10, 30, 30));
-    myellip.setBrush(Qt::yellow);
-    myellip.drawEllipse(QRect(XC3+5, YR2+50, 30, 30));
-    myellip.setBrush(Qt::green);
-    myellip.drawEllipse(QRect(XC3+45, YR2+50, 30, 30));
-    myellip.setBrush(Qt::cyan);
-    myellip.drawEllipse(QRect(XC3+5, YR2+90, 30, 30));
-    myellip.setBrush(QColorConstants::Svg::purple);
-    myellip.drawEllipse(QRect(XC3+45, YR2+90, 30, 30));
-
-    //All circles C4
-    myellip.setBrush(Qt::red);
-    myellip.drawEllipse(QRect(XC4+5, YR2+10, 30, 30));
-    myellip.setBrush(QColorConstants::Svg::orange);
-    myellip.drawEllipse(QRect(XC4+45, YR2+10, 30, 30));
-    myellip.setBrush(Qt::yellow);
-    myellip.drawEllipse(QRect(XC4+5, YR2+50, 30, 30));
-    myellip.setBrush(Qt::green);
-    myellip.drawEllipse(QRect(XC4+45, YR2+50, 30, 30));
-    myellip.setBrush(Qt::cyan);
-    myellip.drawEllipse(QRect(XC4+5, YR2+90, 30, 30));
-    myellip.setBrush(QColorConstants::Svg::purple);
-    myellip.drawEllipse(QRect(XC4+45, YR2+90, 30, 30));
+    //First 4 cards
+    for(int i = 0; i < 4; i++){
+        for(int j = 0; j < 6; j++){
+            myellip.setBrush(Colors[j]);
+            myellip.drawEllipse(QRect(Card_XPos[i]+Color_XOffset[j],Card_YPos[i]+Color_YOffset[j],30,30));
+        }
+    }
 
 }
