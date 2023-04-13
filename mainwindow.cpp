@@ -94,7 +94,7 @@ void MainWindow::handleIns()
     Options_toggle[0] = !Options_toggle[0];
     if(Options_toggle[0]){
         Options[0]->setGeometry(QRect(0,0,800,600));
-        Options[0]->setText("These are the instructions");
+        Options[0]->setText("Three or more cards form a set if the total number of dots of each color is either 0 or 2.");
     }else{
         Options[0]->setGeometry(QRect(0,0,80,80));
         Options[0]->setText("Instructions");
