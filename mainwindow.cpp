@@ -74,8 +74,8 @@ void MainWindow::paintEvent(QPaintEvent *event)
     myellip.setPen(pen);
     pen.setWidth(2);
 
-    //First 4 cards
-    for(int i = 0; i < 4; i++){
+    //Dots
+    for(int i = 0; i < 7; i++){
         for(int j = 0; j < 6; j++){
             myellip.setBrush(Colors[j]);
             myellip.drawEllipse(QRect(Card_XPos[i]+Color_XOffset[j],Card_YPos[i]+Color_YOffset[j],30,30));
