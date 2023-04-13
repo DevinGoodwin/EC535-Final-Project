@@ -11,6 +11,8 @@ std::vector<int> Color_XOffset = {5,45,5,45,5,45}; //Color 1-6 X offset from car
 std::vector<int> Color_YOffset = {10,10,50,50,90,90}; //Color 1-6 Y offset from card Y coord
 std::vector<QColor> Colors = {Qt::red,QColorConstants::Svg::orange,Qt::yellow,Qt::green,Qt::cyan,QColorConstants::Svg::purple}; //Colors 1-6
 std::vector<QPushButton *> Buttons(7);
+std::vector<QPushButton *> Options(3);
+std::vector<bool> Options_toggle(3);
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -30,8 +32,15 @@ MainWindow::MainWindow(QWidget *parent)
         // Make the Buttons and their text transparent
         Buttons[i]->setStyleSheet("background-color: transparent");
         Buttons[i]->setPalette(QPalette(tb, tb, tb, tb, tb, tb, tb, tb, tb));
-        connect(Buttons[i], &QPushButton::released, this, &MainWindow::handleButton);
+        connect(Buttons[i], &QPushButton::released, this, &::MainWindow::handleButton);
     }
+
+    // Instruction Button
+    Options[0] = new QPushButton("Instructions", this);
+    Options[0]->setGeometry(QRect(0,0,80,80));
+    Options_toggle[0] = false;
+    connect(Options[0],&QPushButton::released, this, &::MainWindow::handleIns);
+
 
 }
 
@@ -77,6 +86,18 @@ void MainWindow::paintEvent(QPaintEvent *event)
 
 void MainWindow::handleButton()
 {
-    // Make the button "visible"
-    Buttons[0]->setPalette(QPalette()); // Back to the default palette
+    Buttons[0]->setStyleSheet("border:4px solid #ff0000;");
 }
+
+void MainWindow::handleIns()
+{
+    Options_toggle[0] = !Options_toggle[0];
+    if(Options_toggle[0]){
+        Options[0]->setGeometry(QRect(0,0,800,600));
+        Options[0]->setText("These are the instructions");
+    }else{
+        Options[0]->setGeometry(QRect(0,0,80,80));
+        Options[0]->setText("Instructions");
+    }
+}
+
