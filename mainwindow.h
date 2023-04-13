@@ -4,6 +4,7 @@
 
 #include <QMainWindow>
 #include<QPainter>
+#include <QPushButton>
 
 
 
@@ -22,8 +23,12 @@ public:
 
     virtual void paintEvent(QPaintEvent *event);
 
+private slots:
+    void handleButton();
+
 private:
     Ui::MainWindow *ui;
+    QPushButton *m_button;
 };
 
 #endif // MAINWINDOW_H
