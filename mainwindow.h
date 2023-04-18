@@ -24,7 +24,7 @@ public:
     virtual void paintEvent(QPaintEvent *event);
 
 private slots:
-    void handleButton();
+    void handleButton(int i);
     void handleIns();
 
 private:
