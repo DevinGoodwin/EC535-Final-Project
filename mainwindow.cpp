@@ -130,19 +130,24 @@ void MainWindow::handleButton(int i)
 
     qInfo() << Running_XOR;
     if(Running_XOR == 0 && Num_Cards_Selected != 0){ //proset found
-        for(int i = 0; i < NUM_CARDS; i++){
-            if(Card_Selected[i]){
-                Card_Selected[i] = 0;
-                Card_Values[i] = Deck.back();
-                Deck.pop_back();
-                Card_Button[i]->setStyleSheet("background-color: transparent");
-            }
-        }
-        Num_Cards_Selected = 0;
-        qInfo() << "proset!";
-        this->update();
-    }
 
+        if(Deck.size() - Num_Cards_Selected <= 0){  //GAME OVER
+            //TODO: handle game over
+        }
+        else{
+            for(int i = 0; i < NUM_CARDS; i++){
+                if(Card_Selected[i]){
+                    Card_Selected[i] = 0;
+                    Card_Values[i] = Deck.back();
+                    Deck.pop_back();
+                    Card_Button[i]->setStyleSheet("background-color: transparent");
+                }
+            }
+            Num_Cards_Selected = 0;
+            qInfo() << "proset!";
+            this->update();
+        }
+    }
 }
 
 void MainWindow::handleIns()
