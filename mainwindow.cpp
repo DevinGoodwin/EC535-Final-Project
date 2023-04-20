@@ -145,6 +145,8 @@ void MainWindow::handleButton(int i)
             }
             Num_Cards_Selected = 0;
             qInfo() << "proset!";
+            //TODO: stop card buttons from doing anything,
+            //display buttons to select who scored or drag cards towards who scored
             this->update();
         }
     }
