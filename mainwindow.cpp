@@ -3,6 +3,12 @@
 #include "./ui_mainwindow.h"
 #include <vector>
 #include <string>
+#include <algorithm>
+#include <iostream>
+#include <iterator>
+#include <random>
+#include <vector>
+#include <QDebug>
 
 
 std::vector<int> Card_XPos = {300,400,250,350,450,300,400}; //Card 1-7 X coord
@@ -18,6 +24,7 @@ std::vector<bool> Options_toggle(3);
 
 int Num_Cards_Selected = 0; //number of cards selected in the game
 int Running_XOR = 0;
+std::vector<int> Deck(63,0);
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -47,7 +54,16 @@ MainWindow::MainWindow(QWidget *parent)
     Options_toggle[0] = false;
     connect(Options[0],&QPushButton::released, this, &::MainWindow::handleIns);
 
-
+    for(int i  = 1; i < 64; i++){
+        Deck[i] = i;
+    }
+    std::random_device rd;
+    std::mt19937 g(rd());
+    std::shuffle(Deck.begin(), Deck.end(), g);
+    for(int i = 0; i < 7; i++){
+        MainWindow::drawCard(i,Deck.back());
+        Deck.pop_back();
+    }
 }
 
 MainWindow::~MainWindow()
@@ -80,12 +96,28 @@ void MainWindow::paintEvent(QPaintEvent *event)
     myellip.setPen(pen);
     pen.setWidth(2);
 
-    //Dots
-    for(int i = 0; i < 7; i++){
-        for(int j = 0; j < 6; j++){
-            myellip.setBrush(Colors[j]);
-            myellip.drawEllipse(QRect(Card_XPos[i]+Color_XOffset[j],Card_YPos[i]+Color_YOffset[j],30,30));
+//    //Dots
+//    for(int i = 0; i < 7; i++){
+//        for(int j = 0; j < 6; j++){
+//            myellip.setBrush(Colors[j]);
+//            myellip.drawEllipse(QRect(Card_XPos[i]+Color_XOffset[j],Card_YPos[i]+Color_YOffset[j],30,30));
+//        }
+//    }
+}
+
+void MainWindow::drawCard(int pos, int value){
+    QPainter painter(this);
+    QPen pen;
+    pen.setColor(Qt::black);
+    pen.setWidth(2);
+    painter.setPen(pen);
+
+    for(int i = 5; i >= 0; i--){
+        if(value % 2 == 1){
+            painter.setBrush(Colors[i]);
+            painter.drawEllipse(QRect(Card_XPos[pos]+Color_XOffset[i],Card_YPos[pos]+Color_YOffset[i],30,30));
         }
+        value/=2;
     }
 }
 
