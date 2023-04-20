@@ -10,6 +10,8 @@
 #include <vector>
 #include <QDebug>
 
+int NUM_COLORS = 6;
+int NUM_CARDS = 7;
 
 std::vector<int> Card_XPos = {300,400,250,350,450,300,400}; //Card 1-7 X coord
 std::vector<int> Card_YPos = {100,100,250,250,250,400,400}; //Card 1-7 Y coord
@@ -23,7 +25,7 @@ std::vector<QPushButton *> Options(3);
 std::vector<bool> Options_toggle(3);
 
 int Num_Cards_Selected = 0; //number of cards selected in the game
-int Running_XOR = 0;
+int Running_XOR = 0; //cards selected correctness check
 std::vector<int> Deck(63,0);
 
 MainWindow::MainWindow(QWidget *parent)
@@ -37,7 +39,7 @@ MainWindow::MainWindow(QWidget *parent)
     QBrush tb(Qt::transparent); // Transparent brush, solid pattern
 
     // Create the buttons
-    for(int i = 0; i < 7; i++){
+    for(int i = 0; i < NUM_CARDS; i++){
         sprintf_s(s,"Button %d",i);
         Card_Button[i] = new QPushButton(s, this);
         Card_Button[i]->setGeometry(QRect(Card_XPos[i],Card_YPos[i],80,130));
@@ -61,8 +63,8 @@ MainWindow::MainWindow(QWidget *parent)
     std::random_device rd;
     std::mt19937 g(rd());
     std::shuffle(Deck.begin(), Deck.end(), g);
-    for(int i = 0; i < 7; i++){
-        MainWindow::drawCard(i,Deck.back());
+    for(int i = 0; i < NUM_CARDS; i++){
+        Card_Values[i] = Deck.back();
         Deck.pop_back();
     }
 }
@@ -89,7 +91,7 @@ void MainWindow::paintEvent(QPaintEvent *event)
     painter.setBrush(Qt::white);
 
     //Card outlines
-    for(int i = 0; i < 7; i++){
+    for(int i = 0; i < NUM_CARDS; i++){
         painter.drawRect(QRect(Card_XPos[i],Card_YPos[i],80,130));
     }
 
@@ -97,28 +99,17 @@ void MainWindow::paintEvent(QPaintEvent *event)
     myellip.setPen(pen);
     pen.setWidth(2);
 
-//    //Dots
-//    for(int i = 0; i < 7; i++){
-//        for(int j = 0; j < 6; j++){
-//            myellip.setBrush(Colors[j]);
-//            myellip.drawEllipse(QRect(Card_XPos[i]+Color_XOffset[j],Card_YPos[i]+Color_YOffset[j],30,30));
-//        }
-//    }
-}
 
-void MainWindow::drawCard(int pos, int value){
-    QPainter painter(this);
-    QPen pen;
-    pen.setColor(Qt::black);
-    pen.setWidth(2);
-    painter.setPen(pen);
-
-    for(int i = 5; i >= 0; i--){
-        if(value % 2 == 1){
-            painter.setBrush(Colors[i]);
-            painter.drawEllipse(QRect(Card_XPos[pos]+Color_XOffset[i],Card_YPos[pos]+Color_YOffset[i],30,30));
+    //Dots
+    for(int i = 0; i < NUM_CARDS; i++){
+        int value = Card_Values[i];
+        for(int j = NUM_COLORS-1; j >= 0; j--){
+            if(value % 2 == 1){
+                myellip.setBrush(Colors[j]);
+                myellip.drawEllipse(QRect(Card_XPos[i]+Color_XOffset[j],Card_YPos[i]+Color_YOffset[j],30,30));
+            }
+            value/=2;
         }
-        value/=2;
     }
 }
 
@@ -137,8 +128,19 @@ void MainWindow::handleButton(int i)
 
     Running_XOR ^= Card_Values[i];
 
+    qInfo() << Running_XOR;
     if(Running_XOR == 0 && Num_Cards_Selected != 0){ //proset found
-        //TODO
+        for(int i = 0; i < NUM_CARDS; i++){
+            if(Card_Selected[i]){
+                Card_Selected[i] = 0;
+                Card_Values[i] = Deck.back();
+                Deck.pop_back();
+                Card_Button[i]->setStyleSheet("background-color: transparent");
+            }
+        }
+        Num_Cards_Selected = 0;
+        qInfo() << "proset!";
+        this->update();
     }
 
 }
