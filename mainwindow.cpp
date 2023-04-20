@@ -23,6 +23,10 @@ std::vector<int> Card_Values(7,0); // 1-63, values of cards on the board
 std::vector<int> Card_Selected(7,0); //0 or 1 for if card is selected or not
 std::vector<QPushButton *> Options(3);
 std::vector<bool> Options_toggle(3);
+std::vector<QPushButton *> Point_Buttons(4);
+std::vector<int> Points_XPos = {360,600,360,160};
+std::vector<int> Points_YPos = {30,300,540,300};
+std::vector<int> Points(4,0);
 
 int Num_Cards_Selected = 0; //number of cards selected in the game
 int Running_XOR = 0; //cards selected correctness check
@@ -57,12 +61,25 @@ MainWindow::MainWindow(QWidget *parent)
     Options[0]->setStyleSheet("font: bold 12px;");
     connect(Options[0],&QPushButton::released, this, &::MainWindow::handleIns);
 
-    for(int i  = 1; i < 64; i++){
-        Deck[i] = i;
+    // Score Buttons
+    for(int i = 0; i < 4; i++){
+        sprintf_s(s,"Player %d",i+1);
+        Point_Buttons[i] = new QPushButton(s, this);
+        Point_Buttons[i]->setGeometry(QRect(Points_XPos[i],Points_YPos[i],60,40));
+        // Make the Buttons and their text transparent
+        //Point_Buttons[i]->setPalette(QPalette(tb, tb, tb, tb, tb, tb, tb, tb, tb));
+        //connect(Card_Button[i], &QPushButton::released, this, &::MainWindow::handleButton);
+        connect(Point_Buttons[i], &QPushButton::released, [this, i] { MainWindow::handlePoints(i); });
+        Point_Buttons[i]->setVisible(false);
+    }
+
+    for(int i  = 0; i < 63; i++){
+        Deck[i] = i+1;
     }
     std::random_device rd;
     std::mt19937 g(rd());
     std::shuffle(Deck.begin(), Deck.end(), g);
+    qInfo() << Deck;
     for(int i = 0; i < NUM_CARDS; i++){
         Card_Values[i] = Deck.back();
         Deck.pop_back();
@@ -80,7 +97,7 @@ void MainWindow::paintEvent(QPaintEvent *event)
     QPainter painter(this);
     QPen pen;
 
-    painter.setBrush(Qt::green);
+    painter.setBrush(Qt::black);
     pen.setColor(Qt::black);
     pen.setWidth(3);
     painter.setPen(pen);
@@ -130,24 +147,17 @@ void MainWindow::handleButton(int i)
 
     qInfo() << Running_XOR;
     if(Running_XOR == 0 && Num_Cards_Selected != 0){ //proset found
-
+        for(int i = 0; i < NUM_CARDS; i++){
+            Card_Button[i]->disconnect();
+        }
         if(Deck.size() - Num_Cards_Selected <= 0){  //GAME OVER
             //TODO: handle game over
         }
         else{
-            for(int i = 0; i < NUM_CARDS; i++){
-                if(Card_Selected[i]){
-                    Card_Selected[i] = 0;
-                    Card_Values[i] = Deck.back();
-                    Deck.pop_back();
-                    Card_Button[i]->setStyleSheet("background-color: transparent");
-                }
-            }
-            Num_Cards_Selected = 0;
             qInfo() << "proset!";
-            //TODO: stop card buttons from doing anything,
-            //display buttons to select who scored or drag cards towards who scored
-            this->update();
+            for(int i = 0; i < 4; i++){
+                Point_Buttons[i]->setVisible(true);
+            }
         }
     }
 }
@@ -164,5 +174,25 @@ void MainWindow::handleIns()
         Options[0]->setText("Instructions");
         Options[0]->setStyleSheet("font: bold 12px;");
     }
+}
+
+void MainWindow::handlePoints(int idx)
+{
+    for(int i = 0; i < NUM_CARDS; i++){
+        if(Card_Selected[i]){
+            Card_Selected[i] = 0;
+            Card_Values[i] = Deck.back();
+            Deck.pop_back();
+            Card_Button[i]->setStyleSheet("background-color: transparent");
+        }
+    }
+    Points[idx]+=1; //can change to Num_Cards_Selected
+    for(int i = 0; i < 4; i++){
+        Point_Buttons[i]->setVisible(false);
+    }
+    for(int i = 0; i < NUM_CARDS; i++){
+        connect(Card_Button[i], &QPushButton::released, [this, i] { MainWindow::handleButton(i); });
+    }
+    Num_Cards_Selected = 0;
 }
 
