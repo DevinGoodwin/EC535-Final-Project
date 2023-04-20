@@ -52,6 +52,7 @@ MainWindow::MainWindow(QWidget *parent)
     Options[0] = new QPushButton("Instructions", this);
     Options[0]->setGeometry(QRect(0,0,80,80));
     Options_toggle[0] = false;
+    Options[0]->setStyleSheet("font: bold 12px;");
     connect(Options[0],&QPushButton::released, this, &::MainWindow::handleIns);
 
     for(int i  = 1; i < 64; i++){
@@ -148,9 +149,11 @@ void MainWindow::handleIns()
     if(Options_toggle[0]){
         Options[0]->setGeometry(QRect(0,0,800,600));
         Options[0]->setText("Three or more cards form a proset if the total number of dots of each color is even.");
+        Options[0]->setStyleSheet("font: bold 20px;");
     }else{
         Options[0]->setGeometry(QRect(0,0,80,80));
         Options[0]->setText("Instructions");
+        Options[0]->setStyleSheet("font: bold 12px;");
     }
 }
 
