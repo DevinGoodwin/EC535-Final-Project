@@ -9,7 +9,7 @@ Menu::Menu(QWidget *parent) :
 
     //Creating Play button
     QPushButton  *Play =  new QPushButton("Play", this);
-    Play->setGeometry(QRect(350,400,100,60));
+    Play->setGeometry(QRect(240,238,60,40));
     Play->setStyleSheet("font: bold 12px;");
     connect(Play, &QPushButton::released, this, &Menu::handlePlay);
 }
@@ -22,8 +22,7 @@ Menu::~Menu()
 void Menu::handlePlay()
 {
     //Closing the menu and opening game
-    MainWindow = new class MainWindow(this);
-    MainWindow->setGeometry(QRect(0,0,800,600));
-    MainWindow -> show();
+    m = new class MainWindow(this);
+    m->showMaximized();
     hide();
 }

@@ -1,6 +1,6 @@
 
 #include "mainwindow.h"
-#include "./ui_mainwindow.h"
+#include "ui_mainwindow.h"
 #include <vector>
 #include <string>
 #include <algorithm>
@@ -44,7 +44,7 @@ MainWindow::MainWindow(QWidget *parent)
 
     // Create the buttons
     for(int i = 0; i < NUM_CARDS; i++){
-        sprintf_s(s,"Button %d",i);
+        sprintf(s,"Button %d",i);
         Card_Button[i] = new QPushButton(s, this);
         Card_Button[i]->setGeometry(QRect(Card_XPos[i],Card_YPos[i],80,130));
         // Make the Buttons and their text transparent
@@ -56,14 +56,14 @@ MainWindow::MainWindow(QWidget *parent)
 
     // Instruction Button
     Options[0] = new QPushButton("Instructions", this);
-    Options[0]->setGeometry(QRect(0,0,80,80));
+    Options[0]->setGeometry(QRect(0,0,40,40));
     Options_toggle[0] = false;
     Options[0]->setStyleSheet("font: bold 12px;");
     connect(Options[0],&QPushButton::released, this, &::MainWindow::handleIns);
 
     // Score Buttons
     for(int i = 0; i < 4; i++){
-        sprintf_s(s,"Player %d",i+1);
+        sprintf(s,"Player %d",i+1);
         Point_Buttons[i] = new QPushButton(s, this);
         Point_Buttons[i]->setGeometry(QRect(Points_XPos[i],Points_YPos[i],60,40));
         // Make the Buttons and their text transparent
