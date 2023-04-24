@@ -24,7 +24,7 @@ std::vector<QColor> Colors = {Qt::red,QColorConstants::Svg::orange,Qt::yellow,Qt
 std::vector<QPushButton *> Card_Button(7);
 std::vector<int> Card_Values(7,0); // 1-63, values of cards on the board
 std::vector<int> Card_Selected(7,0); //0 or 1 for if card is selected or not
-std::vector<QPushButton *> Options(3);
+std::vector<QPushButton *> Options(4);
 std::vector<bool> Options_toggle(3);
 std::vector<QPushButton *> Point_Buttons(4);
 std::vector<int> Points_XPos = {300,300,300,300};
@@ -58,7 +58,15 @@ MainWindow::MainWindow(QWidget *parent)
         connect(Card_Button[i], &QPushButton::released, [this, i] { MainWindow::handleButton(i); });
     }
 
+    // Reset Button
+    Options[3] = new QPushButton("Reset", this);
+    Options[3]->setGeometry(QRect(490,240,60,40));
+    Options[3]->setText("Reset");
+    Options[3]->setStyleSheet("font: bold 8px;");
+    Options[3]->setVisible(true);
+    connect(Options[3],&QPushButton::released, this, &::MainWindow::handleReset);
 
+    // Gameover Button
     Options[2] = new QPushButton("Gameover", this);
     Options_toggle[2] = false;
     Options[2]->setGeometry(QRect(0,0,555,280));
@@ -68,9 +76,10 @@ MainWindow::MainWindow(QWidget *parent)
     //Menu Button
     Options[1] = new QPushButton("Menu", this);
     Options_toggle[1] = false;
-    Options[1]->setGeometry(QRect(490,240,60,40));
+    Options[1]->setGeometry(QRect(0,240,60,40));
     Options[1]->setText("Menu");
     Options[1]->setStyleSheet("font: bold 8px;");
+    Options[1]->setVisible(true);
     connect(Options[1],&QPushButton::released, this, &::MainWindow::handleMenu);
 
     // Instruction Button
@@ -79,6 +88,7 @@ MainWindow::MainWindow(QWidget *parent)
     Options[0]->setGeometry(QRect(0,0,60,40));
     Options[0]->setText("Instructions");
     Options[0]->setStyleSheet("font: bold 8px;");
+    Options[0]->setVisible(true);
     connect(Options[0],&QPushButton::released, this, &::MainWindow::handleIns);
 
     // Score Buttons
@@ -289,6 +299,7 @@ void MainWindow::handlePoints(int idx)
         sprintf(s_winner,"Player %d Wins!", winner);
         Options[2]->setText(s_winner);
         Options[2]->setStyleSheet("font: bold 18px;");
+        Options[3]->setVisible(false);
         Options[2] -> setVisible(true);
         Options[1] -> setVisible(false);
         Options[0] -> setVisible(false);
@@ -307,4 +318,25 @@ void MainWindow::handleMenu()
     ((QWidget*)parent())->show();
     this->close();
 
+}
+
+void MainWindow::handleReset()
+{
+    qInfo() << "Starting size";
+    int x = Deck.size(), i;
+    qInfo() << x;
+    for(i = 0; i < x; i++){
+        Deck.pop_back();
+        qInfo() << i;
+    }
+    for(i  = 0; i < 63; i++){
+        Deck.push_back(i+1);
+    }
+    qInfo() << "Pushed size";
+    qInfo() << Deck.size();
+    for(i = 1; i < 4; i++){
+        Points[i] = 0;
+    }
+    this->close();
+    ((QWidget*)parent())->show();
 }
