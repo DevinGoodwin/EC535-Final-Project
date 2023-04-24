@@ -45,6 +45,7 @@ MainWindow::MainWindow(QWidget *parent)
     // Make the button "invisible"
     QBrush tb(Qt::transparent); // Transparent brush, solid pattern
 
+
     // Create the buttons
     for(int i = 0; i < NUM_CARDS; i++){
         sprintf(s,"Button %d",i);
@@ -58,6 +59,11 @@ MainWindow::MainWindow(QWidget *parent)
     }
 
 
+    Options[2] = new QPushButton("Gameover", this);
+    Options_toggle[2] = false;
+    Options[2]->setGeometry(QRect(0,0,555,280));
+    Options[2]->setVisible(false);
+    connect(Options[2],&QPushButton::released, this, &::MainWindow::handleMenu);
 
     //Menu Button
     Options[1] = new QPushButton("Menu", this);
@@ -268,8 +274,27 @@ void MainWindow::handlePoints(int idx)
     assert(Deck.size() >= 0);
     if(Deck.size() == 0){
         // GAME OVER
-        //TODO: handle game over
         qInfo() << "Game should end here, cards left in deck " << Deck.size();
+        int wpoints = Points[0];
+        int winner = 1;
+        char s_winner[20];
+        Points[0] = 0;
+        for(int i = 1; i < 4; i++){
+            if(wpoints<Points[i]){
+                wpoints = Points[i];
+                winner = i+1;
+            }
+            Points[i] = 0;
+        }
+        sprintf(s_winner,"Player %d Wins!", winner);
+        Options[2]->setText(s_winner);
+        Options[2]->setStyleSheet("font: bold 18px;");
+        Options[2] -> setVisible(true);
+        Options[1] -> setVisible(false);
+        Options[0] -> setVisible(false);
+        for(int i  = 0; i < 63; i++){
+            Deck.push_back(i+1);
+        }
     }
     for(int i = 0; i < NUM_CARDS; i++){
         connect(Card_Button[i], &QPushButton::released, [this, i] { MainWindow::handleButton(i); });
@@ -281,4 +306,5 @@ void MainWindow::handleMenu()
 {
     ((QWidget*)parent())->show();
     this->close();
+
 }
