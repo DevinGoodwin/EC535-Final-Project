@@ -27,7 +27,7 @@ std::vector<int> Card_Selected(7,0); //0 or 1 for if card is selected or not
 std::vector<QPushButton *> Options(4);
 std::vector<bool> Options_toggle(3);
 std::vector<QPushButton *> Point_Buttons(4);
-std::vector<int> Points_XPos = {300,300,300,300};
+std::vector<int> Points_XPos = {250,250,250,250};
 std::vector<int> Points_YPos = {40,90,140,190};
 std::vector<int> Points(4,0);
 
@@ -60,7 +60,7 @@ MainWindow::MainWindow(QWidget *parent)
 
     // Reset Button
     Options[3] = new QPushButton("Reset", this);
-    Options[3]->setGeometry(QRect(490,240,60,40));
+    Options[3]->setGeometry(QRect(420,240,60,40));
     Options[3]->setText("Reset");
     Options[3]->setStyleSheet("font: bold 8px;");
     Options[3]->setVisible(true);
@@ -69,7 +69,7 @@ MainWindow::MainWindow(QWidget *parent)
     // Gameover Button
     Options[2] = new QPushButton("Gameover", this);
     Options_toggle[2] = false;
-    Options[2]->setGeometry(QRect(0,0,555,280));
+    Options[2]->setGeometry(QRect(0,0,490,280));
     Options[2]->setVisible(false);
     connect(Options[2],&QPushButton::released, this, &::MainWindow::handleMenu);
 
@@ -93,7 +93,7 @@ MainWindow::MainWindow(QWidget *parent)
 
     // Score Buttons
     for(int i = 0; i < 4; i++){
-        sprintf(s,"Player %d",i+1);
+        sprintf(s,"P %d",i+1);
         Point_Buttons[i] = new QPushButton(s, this);
         Point_Buttons[i]->setGeometry(QRect(Points_XPos[i],Points_YPos[i],60,40));
         // Make the Buttons and their text transparent
@@ -184,7 +184,7 @@ void MainWindow::paintEvent(QPaintEvent *event)
         }
     }
     //Score
-    QRect ScoreBox = QRect(400,25,150,230);
+    QRect ScoreBox = QRect(330,25,150,230);
     QFont font = painter.font();
     font.setPixelSize(18);
     painter.setFont(font);
@@ -227,9 +227,9 @@ void MainWindow::handleIns()
 {
     Options_toggle[0] = !Options_toggle[0];
     if(Options_toggle[0]){
-        Options[0]->setGeometry(QRect(0,0,555,280));
-        Options[0]->setText("Three or more cards form a proset if the total number of dots of each color is even.");
-        Options[0]->setStyleSheet("font: bold 10px;");
+        Options[0]->setGeometry(QRect(0,0,490,280));
+        Options[0]->setText("Three or more cards form a proset if\n the total number of dots of each color\n is even or zero.");
+        Options[0]->setStyleSheet("font: bold 16px;");
     }else{
         Options[0]->setGeometry(QRect(0,0,60,40));
         Options[0]->setText("Instructions");
@@ -334,7 +334,7 @@ void MainWindow::handleReset()
     }
     qInfo() << "Pushed size";
     qInfo() << Deck.size();
-    for(i = 1; i < 4; i++){
+    for(i = 0; i < 4; i++){
         Points[i] = 0;
     }
     this->close();

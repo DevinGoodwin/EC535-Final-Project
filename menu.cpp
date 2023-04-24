@@ -9,7 +9,7 @@ Menu::Menu(QWidget *parent) :
 
     //Creating Play button
     QPushButton  *Play =  new QPushButton("Play", this);
-    Play->setGeometry(QRect(240,238,60,40));
+    Play->setGeometry(QRect(220,230,60,40));
     Play->setStyleSheet("font: bold 12px;");
     connect(Play, &QPushButton::released, this, &Menu::handlePlay);
 }
