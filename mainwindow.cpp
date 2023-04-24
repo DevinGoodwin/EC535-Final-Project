@@ -8,8 +8,9 @@
 #include <iterator>
 #include <random>
 #include <vector>
+#include <stdio.h>
+#include <stdlib.h>
 #include <QDebug>
-
 int NUM_COLORS = 6;
 int NUM_CARDS = 7;
 int CARD_WIDTH = 50;
@@ -85,17 +86,40 @@ MainWindow::MainWindow(QWidget *parent)
         connect(Point_Buttons[i], &QPushButton::released, [this, i] { MainWindow::handlePoints(i); });
         Point_Buttons[i]->setVisible(false);
     }
-
-    for(int i  = 0; i < 63; i++){
-        Deck[i] = i+1;
-    }
-    std::random_device rd;
-    std::mt19937 g(rd());
-    std::shuffle(Deck.begin(), Deck.end(), g);
-    qInfo() << Deck;
-    for(int i = 0; i < NUM_CARDS; i++){
-        Card_Values[i] = Deck.back();
-        Deck.pop_back();
+    if(Deck.size() == 63){
+        for(int i  = 0; i < 63; i++){
+            Deck[i] = i+1;
+        }
+        qInfo() << Deck << " " << Deck.size();
+        std::random_device rd;
+        std::mt19937 g(rd());
+        std::shuffle(Deck.begin(), Deck.end(), g);
+        qInfo() << Deck << " " << Deck.size();
+        for(int i = 0; i < NUM_CARDS; i++){
+            Card_Values[i] = Deck.back();
+            Deck.pop_back();
+        }
+        qInfo() << Deck << " " << Deck.size();
+        for(int i = 1; i < 127; i++){
+            int xorv = 0;
+            int init = i;
+            for(int j = 0; j < 7; j++){
+                if(init%2 == 1){
+                    xorv^=Card_Values[j];
+                }
+                init/=2;
+            }
+            if(xorv == 0){
+                init = i;
+                for(int j = 0; j < 7; j++){
+                    if(init%2 == 1){
+                        qInfo() << j+1;
+                    }
+                    init/=2;
+                }
+                break;
+            }
+        }
     }
 }
 
@@ -110,14 +134,16 @@ void MainWindow::paintEvent(QPaintEvent *event)
     QPainter painter(this);
     QPen pen;
 
-    painter.setBrush(Qt::black);
-    pen.setColor(Qt::black);
+    painter.setBrush(Qt::darkGreen);
+    pen.setColor(Qt::darkGreen);
     pen.setWidth(3);
     painter.setPen(pen);
 
     //Background
     painter.drawRect(QRect(0,0,555,280));
 
+    pen.setColor(Qt::black);
+    painter.setPen(pen);
     painter.setBrush(Qt::white);
 
     //Card outlines
@@ -141,6 +167,17 @@ void MainWindow::paintEvent(QPaintEvent *event)
             value/=2;
         }
     }
+    //Score
+    QRect ScoreBox = QRect(400,25,150,230);
+    QFont font = painter.font();
+    font.setPixelSize(18);
+    painter.setFont(font);
+    std::string ScoreText = "Deck Size: " + std::to_string(Deck.size()) + "\n\n\n\n";
+    for(int i = 0; i < 4; i++){
+        ScoreText += "Player " + std::to_string(i+1) + ": " + std::to_string(Points[i]) + "\n";
+    }
+    const char* ScoreT = ScoreText.c_str();
+    painter.drawText(ScoreBox,tr(ScoreT));
 }
 
 void MainWindow::handleButton(int i)
@@ -163,14 +200,9 @@ void MainWindow::handleButton(int i)
         for(int i = 0; i < NUM_CARDS; i++){
             Card_Button[i]->disconnect();
         }
-        if(Deck.size() - Num_Cards_Selected <= 0){  //GAME OVER
-            //TODO: handle game over
-        }
-        else{
-            qInfo() << "proset!";
-            for(int i = 0; i < 4; i++){
-                Point_Buttons[i]->setVisible(true);
-            }
+        qInfo() << "proset!";
+        for(int i = 0; i < 4; i++){
+            Point_Buttons[i]->setVisible(true);
         }
     }
 }
@@ -194,14 +226,50 @@ void MainWindow::handlePoints(int idx)
     for(int i = 0; i < NUM_CARDS; i++){
         if(Card_Selected[i]){
             Card_Selected[i] = 0;
-            Card_Values[i] = Deck.back();
-            Deck.pop_back();
+            if(Deck.size() == 0){
+                Card_Values[i] = 0;
+            }
+            else{
+                Card_Values[i] = Deck.back();
+                Deck.pop_back();
+            }
             Card_Button[i]->setStyleSheet("background-color: transparent");
         }
     }
-    Points[idx]+=1; //can change to Num_Cards_Selected
+
+    for(int i = 1; i < 127; i++){
+        int xorv = 0;
+        int init = i;
+        for(int j = 0; j < 7; j++){
+            if(init%2 == 1){
+                xorv^=Card_Values[j];
+            }
+            init/=2;
+        }
+        if(xorv == 0){
+            init = i;
+            for(int j = 0; j < 7; j++){
+                if(init%2 == 1){
+                    qInfo() << j+1;
+                }
+                init/=2;
+            }
+            break;
+        }
+    }
+
+    Points[idx]+=Num_Cards_Selected; //can change to Num_Cards_Selected
+    qInfo() << Points;
+    qInfo() << Deck << " " << Deck.size();
+    this->update();
     for(int i = 0; i < 4; i++){
         Point_Buttons[i]->setVisible(false);
+    }
+    assert(Deck.size() >= 0);
+    if(Deck.size() == 0){
+        // GAME OVER
+        //TODO: handle game over
+        qInfo() << "Game should end here, cards left in deck " << Deck.size();
     }
     for(int i = 0; i < NUM_CARDS; i++){
         connect(Card_Button[i], &QPushButton::released, [this, i] { MainWindow::handleButton(i); });
