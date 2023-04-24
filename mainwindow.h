@@ -27,6 +27,7 @@ private slots:
     void handleButton(int i);
     void handleIns();
     void handlePoints(int i);
+    void handleMenu();
 
 private:
     Ui::MainWindow *ui;

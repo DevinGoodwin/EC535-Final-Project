@@ -1,6 +1,6 @@
 
 #include "mainwindow.h"
-#include "./ui_mainwindow.h"
+#include "ui_mainwindow.h"
 #include <vector>
 #include <string>
 #include <algorithm>
@@ -12,11 +12,13 @@
 
 int NUM_COLORS = 6;
 int NUM_CARDS = 7;
+int CARD_WIDTH = 50;
+int CARD_HEIGHT = 75;
 
-std::vector<int> Card_XPos = {300,400,250,350,450,300,400}; //Card 1-7 X coord
-std::vector<int> Card_YPos = {100,100,250,250,250,400,400}; //Card 1-7 Y coord
-std::vector<int> Color_XOffset = {5,45,5,45,5,45}; //Color 1-6 X offset from card X coord
-std::vector<int> Color_YOffset = {10,10,50,50,90,90}; //Color 1-6 Y offset from card Y coord
+std::vector<int> Card_XPos = {100,160,70,130,190,100,160}; //Card 1-7 X coord
+std::vector<int> Card_YPos = {25,25,110,110,110,195,195}; //Card 1-7 Y coord
+std::vector<int> Color_XOffset = {5,27,5,27,5,27}; //Color 1-6 X offset from card X coord
+std::vector<int> Color_YOffset = {6,6,28,28,50,50}; //Color 1-6 Y offset from card Y coord
 std::vector<QColor> Colors = {Qt::red,QColorConstants::Svg::orange,Qt::yellow,Qt::green,Qt::cyan,QColorConstants::Svg::purple}; //Colors 1-6
 std::vector<QPushButton *> Card_Button(7);
 std::vector<int> Card_Values(7,0); // 1-63, values of cards on the board
@@ -24,8 +26,8 @@ std::vector<int> Card_Selected(7,0); //0 or 1 for if card is selected or not
 std::vector<QPushButton *> Options(3);
 std::vector<bool> Options_toggle(3);
 std::vector<QPushButton *> Point_Buttons(4);
-std::vector<int> Points_XPos = {360,600,360,160};
-std::vector<int> Points_YPos = {30,300,540,300};
+std::vector<int> Points_XPos = {300,300,300,300};
+std::vector<int> Points_YPos = {40,90,140,190};
 std::vector<int> Points(4,0);
 
 int Num_Cards_Selected = 0; //number of cards selected in the game
@@ -44,9 +46,9 @@ MainWindow::MainWindow(QWidget *parent)
 
     // Create the buttons
     for(int i = 0; i < NUM_CARDS; i++){
-        sprintf_s(s,"Button %d",i);
+        sprintf(s,"Button %d",i);
         Card_Button[i] = new QPushButton(s, this);
-        Card_Button[i]->setGeometry(QRect(Card_XPos[i],Card_YPos[i],80,130));
+        Card_Button[i]->setGeometry(QRect(Card_XPos[i],Card_YPos[i],CARD_WIDTH,CARD_HEIGHT));
         // Make the Buttons and their text transparent
         Card_Button[i]->setStyleSheet("background-color: transparent");
         Card_Button[i]->setPalette(QPalette(tb, tb, tb, tb, tb, tb, tb, tb, tb));
@@ -54,16 +56,27 @@ MainWindow::MainWindow(QWidget *parent)
         connect(Card_Button[i], &QPushButton::released, [this, i] { MainWindow::handleButton(i); });
     }
 
+
+
+    //Menu Button
+    Options[1] = new QPushButton("Menu", this);
+    Options_toggle[1] = false;
+    Options[1]->setGeometry(QRect(490,240,60,40));
+    Options[1]->setText("Menu");
+    Options[1]->setStyleSheet("font: bold 8px;");
+    connect(Options[1],&QPushButton::released, this, &::MainWindow::handleMenu);
+
     // Instruction Button
     Options[0] = new QPushButton("Instructions", this);
-    Options[0]->setGeometry(QRect(0,0,80,80));
     Options_toggle[0] = false;
-    Options[0]->setStyleSheet("font: bold 12px;");
+    Options[0]->setGeometry(QRect(0,0,60,40));
+    Options[0]->setText("Instructions");
+    Options[0]->setStyleSheet("font: bold 8px;");
     connect(Options[0],&QPushButton::released, this, &::MainWindow::handleIns);
 
     // Score Buttons
     for(int i = 0; i < 4; i++){
-        sprintf_s(s,"Player %d",i+1);
+        sprintf(s,"Player %d",i+1);
         Point_Buttons[i] = new QPushButton(s, this);
         Point_Buttons[i]->setGeometry(QRect(Points_XPos[i],Points_YPos[i],60,40));
         // Make the Buttons and their text transparent
@@ -103,13 +116,13 @@ void MainWindow::paintEvent(QPaintEvent *event)
     painter.setPen(pen);
 
     //Background
-    painter.drawRect(QRect(0,0,800,600));
+    painter.drawRect(QRect(0,0,555,280));
 
     painter.setBrush(Qt::white);
 
     //Card outlines
     for(int i = 0; i < NUM_CARDS; i++){
-        painter.drawRect(QRect(Card_XPos[i],Card_YPos[i],80,130));
+        painter.drawRect(QRect(Card_XPos[i],Card_YPos[i],CARD_WIDTH,CARD_HEIGHT));
     }
 
     QPainter myellip(this);
@@ -123,7 +136,7 @@ void MainWindow::paintEvent(QPaintEvent *event)
         for(int j = NUM_COLORS-1; j >= 0; j--){
             if(value % 2 == 1){
                 myellip.setBrush(Colors[j]);
-                myellip.drawEllipse(QRect(Card_XPos[i]+Color_XOffset[j],Card_YPos[i]+Color_YOffset[j],30,30));
+                myellip.drawEllipse(QRect(Card_XPos[i]+Color_XOffset[j],Card_YPos[i]+Color_YOffset[j],18,18));
             }
             value/=2;
         }
@@ -166,13 +179,13 @@ void MainWindow::handleIns()
 {
     Options_toggle[0] = !Options_toggle[0];
     if(Options_toggle[0]){
-        Options[0]->setGeometry(QRect(0,0,800,600));
+        Options[0]->setGeometry(QRect(0,0,555,280));
         Options[0]->setText("Three or more cards form a proset if the total number of dots of each color is even.");
-        Options[0]->setStyleSheet("font: bold 20px;");
+        Options[0]->setStyleSheet("font: bold 10px;");
     }else{
-        Options[0]->setGeometry(QRect(0,0,80,80));
+        Options[0]->setGeometry(QRect(0,0,60,40));
         Options[0]->setText("Instructions");
-        Options[0]->setStyleSheet("font: bold 12px;");
+        Options[0]->setStyleSheet("font: bold 8px;");
     }
 }
 
@@ -196,3 +209,8 @@ void MainWindow::handlePoints(int idx)
     Num_Cards_Selected = 0;
 }
 
+void MainWindow::handleMenu()
+{
+    ((QWidget*)parent())->show();
+    this->close();
+}
